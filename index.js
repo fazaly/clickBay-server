@@ -33,6 +33,13 @@ async function run () {
             res.send(cursor);
         });
 
+        app.get('/homePost', async(req, res) => {
+            const query = {}
+            const cursor = postCollection.find(query);
+            const post = await cursor.limit(3).toArray();
+            res.send(post);
+        });
+
         app.get('/about', async(req, res) => {
             const query = {}
             const cursor = await aboutCollection.find(query).toArray();
@@ -50,6 +57,25 @@ async function run () {
             }
             const result = await aboutCollection.updateOne(filter, updateDoc, options);
             res.send(result);
+        });
+
+        app.patch('/myMedia/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = req.body;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: query
+            }
+            const result = await postCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        app.get('/myMedia/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const cursor = await postCollection.findOne(query)
+            res.send(cursor)
         });
     }
     finally{
